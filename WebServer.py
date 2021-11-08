@@ -14,9 +14,7 @@ serverSocket.bind((SERVER_HOST, SERVER_PORT)) # Bind the socket to address/port
 serverSocket.listen(1)
 
 while True:
-	# Establish the connection
 	print('Ready to serve...')
-
 	'''
 		clientSocket is a new socket object usable to 
 			send and receive data on the connection
@@ -26,39 +24,33 @@ while True:
 	clientSocket, clientAddr = serverSocket.accept() #TODO
 	
 	try:
-		message = "HelloWorld.html"
-		#filename = message.split()[1]
-		#f = open(filename[1:])
-		f = open(message)
-		#outputdata = #TODO
-		
-		# Client request
-		#request = clientSocket.recv(1024).decode()
-
-		# Send one HTTP header line into socket
-		#clientSocket.send('HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n'.encode())
-
 		request = clientSocket.recv(1024).decode()
 		print(request)
 
-		'''
-		# Send the content of the requested file to the client
-		for i in range(0, len(outputdata)):
-			clientSocket.send(outputdata[i].encode())
-		clientSocket.send("\r\n".encode())
-		'''
+		# Obtain requested filename from 
+		headers = request.split('\n')
+		print(headers)
+		filename = headers[0].split()[1]
 
-		response = 'HTTP/1.0 200 OK\n\nHello World'
+		# if requesting HelloWorld.html
+		if "HelloWorld.html" in request:
+			# return content of HelloWorld.html
+			file = open("HelloWorld.html")
+			htmlContent = file.read()
+			file.close()
+			response = 'HTTP/1.0 200 OK\n\n' + htmlContent
+		else:
+			# return error 404
+			response = 'HTTP/1.0 200 OK\n\nError 404'
+		
 		clientSocket.sendall(response.encode())
 		clientSocket.close()
 
 	except IOError:
-		print('except IOError')
-		# Send response message for file not found
-		#TODO
-
-		# Close client socket
-		#TODO
+		# return error 404
+		response = 'HTTP/1.0 200 OK\n\nError 404'
+		client_connection.sendall(response.encode())
+		client_connection.close()
 
 serverSocket.close()
-sys.exit() # Terminate the program after sending the corresponding data 
+sys.exit() # Terminate the program after sending the corresponding data
