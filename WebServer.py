@@ -3,20 +3,14 @@ import sys # In order to terminate the program
 
 # http://localhost:5050/HelloWorld.html
 
-serverSocket = socket(AF_INET, SOCK_STREAM)
-
 # Prepare a server socket
 #SERVER_HOST = "localhost"
 SERVER_HOST = "127.0.0.1"	# Host address; localhost
 SERVER_PORT = 5050			# Listening at
 
-# Not sure how this line works exactly
+serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-
-# Bind the socket to address
-# A pair (host, port) is used for the AF_INET address family
-serverSocket.bind((SERVER_HOST, SERVER_PORT))
-
+serverSocket.bind((SERVER_HOST, SERVER_PORT)) # Bind the socket to address/port
 serverSocket.listen(1)
 
 while True:
@@ -42,9 +36,10 @@ while True:
 		#request = clientSocket.recv(1024).decode()
 
 		# Send one HTTP header line into socket
-		clientSocket.send('HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n'.encode())
-		clientSocket.send("""<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Hello World</title></head><body><p>Hello world!</p></body></html>""".encode())
+		#clientSocket.send('HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n'.encode())
 
+		request = clientSocket.recv(1024).decode()
+		print(request)
 
 		'''
 		# Send the content of the requested file to the client
@@ -53,8 +48,8 @@ while True:
 		clientSocket.send("\r\n".encode())
 		'''
 
-		#response = 'HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n<html><body>Hello World</body></html>'
-		#clientSocket.sendall(response.encode())
+		response = 'HTTP/1.0 200 OK\n\nHello World'
+		clientSocket.sendall(response.encode())
 		clientSocket.close()
 
 	except IOError:
